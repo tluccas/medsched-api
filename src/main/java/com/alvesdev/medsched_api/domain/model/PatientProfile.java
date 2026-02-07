@@ -31,9 +31,6 @@ public class PatientProfile {
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
-    @Column(nullable = false, name = "full_name")
-    private String fullName;
-
     @Column(nullable = false, name = "birth_date")
     private LocalDate birthDate;
 
