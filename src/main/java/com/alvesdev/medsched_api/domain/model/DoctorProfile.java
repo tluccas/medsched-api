@@ -37,6 +37,12 @@ public class DoctorProfile {
     @Column(nullable = false, unique = true, name = "license_number")
     private String licenseNumber;
 
+    public DoctorProfile(User user, String specialization, String licenseNumber) {
+        this.user = user;
+        this.specialization = specialization;
+        this.licenseNumber = licenseNumber;
+    }
+
     @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Schedule> schedules;
 
