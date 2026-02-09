@@ -37,6 +37,12 @@ public class PatientProfile {
     @Column(nullable = true, name = "medical_history", columnDefinition = "TEXT")
     private String medicalHistory;
 
+    public PatientProfile(User user, LocalDate birthDate, String medicalHistory) {
+        this.user = user;
+        this.birthDate = birthDate;
+        this.medicalHistory = medicalHistory;
+    }
+
     @OneToMany(mappedBy = "patient", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Appointment> appointments;
 }

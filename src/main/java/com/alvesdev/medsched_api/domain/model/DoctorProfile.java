@@ -27,7 +27,7 @@ public class DoctorProfile {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
-    @OneToOne(fetch = FetchType.LAZY)
+    @OneToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id", nullable = false, unique = true)
     private User user;
 
@@ -36,6 +36,12 @@ public class DoctorProfile {
 
     @Column(nullable = false, unique = true, name = "license_number")
     private String licenseNumber;
+
+    public DoctorProfile(User user, String specialization, String licenseNumber) {
+        this.user = user;
+        this.specialization = specialization;
+        this.licenseNumber = licenseNumber;
+    }
 
     @OneToMany(mappedBy = "doctor", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<Schedule> schedules;

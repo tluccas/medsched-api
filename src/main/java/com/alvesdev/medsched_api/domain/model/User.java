@@ -1,11 +1,14 @@
 package com.alvesdev.medsched_api.domain.model;
 
 import java.time.LocalDateTime;
+import java.util.Collection;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.UUID;
 
-import org.springframework.data.annotation.CreatedDate;
+import org.hibernate.annotations.CreationTimestamp;
+import org.springframework.security.core.GrantedAuthority;
+import org.springframework.security.core.userdetails.UserDetails;
 
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -26,7 +29,7 @@ import lombok.NoArgsConstructor;
 @Data
 @NoArgsConstructor
 @Table(name = "users")
-public class User {
+public class User implements UserDetails {
     
     @Id
     @GeneratedValue(strategy = GenerationType.UUID)
@@ -41,16 +44,20 @@ public class User {
     @Column(nullable = false)
     private String password;
 
-    @CreatedDate
+    public User(String username, String email, String password) {
+        this.username = username;
+        this.email = email;
+        this.password = password;
+    }
+    
+    @CreationTimestamp
     @Column(name = "created_at", nullable = false, updatable = false)
     private LocalDateTime createdAt;
 
-    @ManyToMany(fetch = FetchType.LAZY)
-    @JoinTable(
-        name = "user_roles",
-        joinColumns = @JoinColumn(name = "user_id"),
-        inverseJoinColumns = @JoinColumn(name = "role_id")
-    )
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name = "user_roles",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id"))
     private Set<Role> roles = new HashSet<>();
 
     // Relationships with profiles
@@ -59,5 +66,41 @@ public class User {
 
     @OneToOne(mappedBy = "user", cascade = CascadeType.ALL, orphanRemoval = true)
     private PatientProfile patientProfile;
-    
+
+    // UserDetails interface methods
+    @Override
+    public Collection<? extends GrantedAuthority> getAuthorities() {
+        return this.roles;
+    }
+
+    @Override
+    public String getPassword() {
+        return password;
+    }
+
+    @Override
+    public String getUsername() {
+        return username;
+    }
+
+    @Override
+    public boolean isAccountNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isAccountNonLocked() {
+        return true;
+    }
+
+    @Override
+    public boolean isCredentialsNonExpired() {
+        return true;
+    }
+
+    @Override
+    public boolean isEnabled() {
+        return true;
+    }
+
 }
