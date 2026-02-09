@@ -1,7 +1,6 @@
 package com.alvesdev.medsched_api.infrastructure.security;
 
 import java.io.IOException;
-import java.net.http.HttpRequest;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
