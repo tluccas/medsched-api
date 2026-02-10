@@ -38,6 +38,9 @@ public class Schedule {
     @Column(nullable = false, name = "end_time")
     private LocalTime endTime;
 
+    @Column(nullable = false)
+    private Boolean available;
+
     @OneToOne(mappedBy = "schedule")
     private Appointment appointment;
 }
