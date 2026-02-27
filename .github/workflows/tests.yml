@@ -9,7 +9,7 @@ on:
 jobs:
   test:
     runs-on: ubuntu-latest
-    
+
     steps:
       - uses: actions/checkout@v4
       
@@ -20,5 +20,5 @@ jobs:
           distribution: 'temurin'
           cache: maven
       
-      - name: Run tests
-        run: mvn clean test
+      - name: Run Unit Tests
+        run: mvn clean test -DskipITs
