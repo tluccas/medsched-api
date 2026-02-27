@@ -6,9 +6,12 @@ import org.springframework.stereotype.Service;
 
 import com.alvesdev.medsched_api.domain.model.DoctorProfile;
 import com.alvesdev.medsched_api.domain.model.PatientProfile;
+import com.alvesdev.medsched_api.domain.model.Role;
 import com.alvesdev.medsched_api.domain.model.User;
+import com.alvesdev.medsched_api.domain.model.enums.RoleType;
 import com.alvesdev.medsched_api.domain.repositories.DoctorRepository;
 import com.alvesdev.medsched_api.domain.repositories.PatientRepository;
+import com.alvesdev.medsched_api.domain.repositories.RoleRepository;
 import com.alvesdev.medsched_api.domain.repositories.UserRepository;
 import com.alvesdev.medsched_api.dto.request.register.ProfileType;
 import com.alvesdev.medsched_api.dto.request.register.RegisterUserReqDto;
@@ -29,9 +32,14 @@ public class UserService {
 
     @Autowired
     PatientRepository patientRepository;
+    
+    @Autowired
+    RoleRepository roleRepository;
 
     @Autowired
     BCryptPasswordEncoder passwordEncoder;
+
+
 
     @Transactional
     public UserDetailResDto registerUser(RegisterUserReqDto data) {
@@ -47,6 +55,14 @@ public class UserService {
             data.email(),
             encryptedPassword
         );
+
+        RoleType roleType = (data.profileType() == ProfileType.DOCTOR) ? RoleType.DOCTOR : RoleType.PATIENT;
+
+        Role userRole = roleRepository.findByName(roleType)
+            .orElseThrow(() -> new RuntimeException("Error: Role is not found."));
+        
+        newUser.getRoles().add(userRole);
+        
         userRepository.save(newUser);
         ProfileResDto profile = null;
         if(data.profileType() == ProfileType.DOCTOR) {
