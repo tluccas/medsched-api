@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RestController;
 import com.alvesdev.medsched_api.domain.services.DoctorService;
 import com.alvesdev.medsched_api.dto.response.user.DoctorDetailResDto;
 
+import io.swagger.v3.oas.annotations.Operation;
+
 import org.springframework.web.bind.annotation.GetMapping;
 
 
@@ -19,6 +21,7 @@ public class DoctorController {
     @Autowired
     private DoctorService doctorService;
 
+    @Operation(summary = "Get all doctors", description = "Returns a list of all doctors in the system.")
     @GetMapping("")
     public ResponseEntity<List<DoctorDetailResDto>> getAllDoctors() {
         List<DoctorDetailResDto> doctors = doctorService.getAllDoctors();

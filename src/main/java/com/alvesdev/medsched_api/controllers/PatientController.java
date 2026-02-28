@@ -10,6 +10,8 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import com.alvesdev.medsched_api.domain.services.PatientService;
 import com.alvesdev.medsched_api.dto.response.user.PatientDetailResDto;
 
+import io.swagger.v3.oas.annotations.Operation;
+
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 
@@ -20,6 +22,7 @@ public class PatientController {
     @Autowired
     private PatientService patientService;
 
+    @Operation(summary = "Get all patients", description = "Returns a list of all patients in the system.")
     @GetMapping("")
     public ResponseEntity<List<PatientDetailResDto>> getAllPatients() {
         return ResponseEntity.ok(patientService.getAllPatients());
