@@ -24,6 +24,9 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
 
     List<Appointment> findByPatientIdAndAppointmentDateTimeAfterOrderByAppointmentDateTimeAsc(UUID patientId, LocalDateTime now);
 
-        List<Appointment> findByDoctorIdAndAppointmentDateTimeAfterOrderByAppointmentDateTimeAsc(UUID doctorId, LocalDateTime now);
+    List<Appointment> findByDoctorIdAndAppointmentDateTimeAfterOrderByAppointmentDateTimeAsc(UUID doctorId, LocalDateTime now);
 
+    int countByDoctorId(UUID doctorId);
+
+    int countByPatientId(UUID patientId);
 }
