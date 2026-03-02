@@ -1,5 +1,7 @@
 package com.alvesdev.medsched_api.domain.services;
 
+import java.util.UUID;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -9,15 +11,18 @@ import com.alvesdev.medsched_api.domain.model.PatientProfile;
 import com.alvesdev.medsched_api.domain.model.Role;
 import com.alvesdev.medsched_api.domain.model.User;
 import com.alvesdev.medsched_api.domain.model.enums.RoleType;
+import com.alvesdev.medsched_api.domain.repositories.AppointmentRepository;
 import com.alvesdev.medsched_api.domain.repositories.DoctorRepository;
 import com.alvesdev.medsched_api.domain.repositories.PatientRepository;
 import com.alvesdev.medsched_api.domain.repositories.RoleRepository;
 import com.alvesdev.medsched_api.domain.repositories.UserRepository;
 import com.alvesdev.medsched_api.dto.request.register.ProfileType;
 import com.alvesdev.medsched_api.dto.request.register.RegisterUserReqDto;
+import com.alvesdev.medsched_api.dto.response.profile.ProfileDetailResponse;
 import com.alvesdev.medsched_api.dto.response.user.ProfileResDto;
 import com.alvesdev.medsched_api.dto.response.user.UserDetailResDto;
 import com.alvesdev.medsched_api.exceptions.EmailAlreadyExistsException;
+import com.alvesdev.medsched_api.exceptions.UserNotFoundException;
 
 import jakarta.transaction.Transactional;
 
@@ -39,8 +44,48 @@ public class UserService {
     @Autowired
     BCryptPasswordEncoder passwordEncoder;
 
+    @Autowired
+    AppointmentRepository appointmentRepository;
 
 
+    public ProfileDetailResponse getUserProfile(UUID userId) {
+        User user = userRepository.findById(userId)
+            .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + userId));
+
+        int upcomingAppointmentsCount = 0;
+        ProfileDetailResponse profileResponse = null;
+    
+        if (user.hasRole(RoleType.DOCTOR)) {
+            upcomingAppointmentsCount = appointmentRepository.countByDoctorId(userId);
+            DoctorProfile doctor = doctorRepository.findByUserId(userId)
+                    .orElseThrow(() -> new UserNotFoundException("Doctor profile not found for user ID: " + userId));
+            profileResponse = new ProfileDetailResponse(
+                user.getUsername(),
+                "DOCTOR",
+                doctor.getSpecialization(),
+                doctor.getLicenseNumber(),
+                null,
+                null,
+                upcomingAppointmentsCount
+            );
+        } else if (user.hasRole(RoleType.PATIENT)) {
+            upcomingAppointmentsCount = appointmentRepository.countByPatientId(userId);
+            PatientProfile patient = patientRepository.findByUserId(userId)
+                .orElseThrow(() -> new UserNotFoundException("Patient profile not found for user ID: " + userId));
+
+            profileResponse = new ProfileDetailResponse(
+                user.getUsername(),
+                "PATIENT",
+                null,
+                null,
+                patient.getMedicalHistory(),
+                patient.getBirthDate(),
+                upcomingAppointmentsCount
+            );
+        }
+        
+        return profileResponse;
+    }
     @Transactional
     public UserDetailResDto registerUser(RegisterUserReqDto data) {
         

@@ -8,6 +8,7 @@ import com.alvesdev.medsched_api.dto.request.AuthenticationDTO;
 import com.alvesdev.medsched_api.dto.response.AuthenticationResponseDTO;
 import com.alvesdev.medsched_api.infrastructure.security.TokenService;
 
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.validation.Valid;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -27,6 +28,7 @@ public class AuthenticationController {
     @Autowired
     private AuthenticationManager authenticationManager;
     
+    @Operation(summary = "Authenticate a user", description = "Authenticates a user and returns a JWT token")
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponseDTO> postMethodName(@RequestBody @Valid AuthenticationDTO dto) {
         var emailPassword = new UsernamePasswordAuthenticationToken(dto.email(), dto.password());

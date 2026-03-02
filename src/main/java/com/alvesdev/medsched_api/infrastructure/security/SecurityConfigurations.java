@@ -28,10 +28,16 @@ public class SecurityConfigurations {
             .authorizeHttpRequests(authorize -> authorize
                 .requestMatchers(HttpMethod.POST, "/auth/login").permitAll()
                 .requestMatchers(HttpMethod.POST, "/users/register").permitAll()
+                .requestMatchers(
+                    "/swagger-ui/**",
+                    "/v3/api-docs/**"
+                ).permitAll()
                 .requestMatchers("/public/**").permitAll()
 
                 .requestMatchers("/doctors/**").hasAnyRole("DOCTOR", "ADMIN")
                 .requestMatchers("/patients/**").hasAnyRole("PATIENT", "ADMIN", "DOCTOR")
+
+                .anyRequest().authenticated()
             )
             .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
             .build();

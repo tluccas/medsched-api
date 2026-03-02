@@ -10,6 +10,8 @@ import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import com.alvesdev.medsched_api.domain.model.enums.RoleType;
+
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -103,6 +105,11 @@ public class User implements UserDetails {
     @Override
     public boolean isEnabled() {
         return true;
+    }
+
+    public boolean hasRole(RoleType roleType) {
+        return roles.stream().map(Role::getName)
+                .anyMatch(roleType::equals);
     }
 
 }
