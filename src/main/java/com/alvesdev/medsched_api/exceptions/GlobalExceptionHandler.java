@@ -14,5 +14,9 @@ public class GlobalExceptionHandler extends ResponseEntityExceptionHandler {
     private ResponseEntity<ErrorResponse> emailAlreadyExistsException(EmailAlreadyExistsException ex) {
         return ResponseEntity.status(400).body(new ErrorResponse(400, "Email Already Exists", "A user with this email already exists."));
     }
-    
+
+    @ExceptionHandler(UserNotFoundException.class)
+    private ResponseEntity<ErrorResponse> userNotFoundException(UserNotFoundException ex) {
+        return ResponseEntity.status(404).body(new ErrorResponse(404, "User Not Found", "The requested user does not exist."));
+    }
 }
