@@ -36,6 +36,8 @@ public class SecurityConfigurations {
 
                 .requestMatchers("/doctors/**").hasAnyRole("DOCTOR", "ADMIN")
                 .requestMatchers("/patients/**").hasAnyRole("PATIENT", "ADMIN", "DOCTOR")
+
+                .anyRequest().authenticated()
             )
             .addFilterBefore(securityFilter, UsernamePasswordAuthenticationFilter.class)
             .build();
