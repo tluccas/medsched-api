@@ -10,9 +10,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 
 import com.alvesdev.medsched_api.domain.services.PatientService;
 import com.alvesdev.medsched_api.dto.request.profiles.UpdatePatientRequest;
+import com.alvesdev.medsched_api.dto.response.ErrorResponse;
 import com.alvesdev.medsched_api.dto.response.user.PatientDetailResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import jakarta.validation.Valid;
@@ -40,8 +43,14 @@ public class PatientController {
     @ApiResponses(
         {
             @ApiResponse(responseCode = "200", description = "Patient found and returned successfully."),
-            @ApiResponse(responseCode = "404", description = "Patient not found with the provided ID."),
-            @ApiResponse(responseCode = "400", description = "Invalid request parameters.")
+            @ApiResponse(responseCode = "404", 
+            description = "Patient not found with the provided ID.",
+            content = @Content(mediaType = "application/json", schema = 
+            @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "400", 
+            description = "Invalid request parameters.",
+            content = @Content(mediaType = "application/json", schema = 
+            @Schema(implementation = ErrorResponse.class)))
         }
     )
     @GetMapping("/{uuid}")
@@ -53,13 +62,19 @@ public class PatientController {
     @ApiResponses(
         {
             @ApiResponse(responseCode = "200", description = "Patient details updated successfully."),
-            @ApiResponse(responseCode = "404", description = "Patient not found with the provided ID."),
-            @ApiResponse(responseCode = "400", description = "Invalid request data.")
+            @ApiResponse(responseCode = "404", 
+            description = "Patient not found with the provided ID.", 
+            content = @Content(mediaType = "application/json", schema = 
+            @Schema(implementation = ErrorResponse.class))),
+            @ApiResponse(responseCode = "400", 
+            description = "Invalid request data.",
+            content = @Content(mediaType = "application/json", schema = 
+            @Schema(implementation = ErrorResponse.class)))
         }
     )
     @PutMapping("/{uuid}")
-    public ResponseEntity<PatientDetailResponse> updatePatient(@PathVariable UUID uuid, @RequestBody @Valid UpdatePatientRequest dto) {
-        PatientDetailResponse updatedPatient = patientService.update(uuid, dto);
+    public ResponseEntity<PatientDetailResponse> updatePatient(@PathVariable UUID uuid, @RequestBody @Valid UpdatePatientRequest request) {
+        PatientDetailResponse updatedPatient = patientService.update(uuid, request);
         return ResponseEntity.ok(updatedPatient);
     }
     
