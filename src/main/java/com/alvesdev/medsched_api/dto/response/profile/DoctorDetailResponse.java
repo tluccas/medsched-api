@@ -1,4 +1,4 @@
-package com.alvesdev.medsched_api.dto.response.user;
+package com.alvesdev.medsched_api.dto.response.profile;
 
 import java.util.UUID;
 
