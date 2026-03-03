@@ -11,7 +11,6 @@ import org.springframework.stereotype.Service;
 import com.alvesdev.medsched_api.domain.model.DoctorProfile;
 import com.alvesdev.medsched_api.domain.model.User;
 import com.alvesdev.medsched_api.domain.repositories.DoctorRepository;
-import com.alvesdev.medsched_api.domain.repositories.UserRepository;
 import com.alvesdev.medsched_api.dto.request.profiles.UpdateDoctorRequest;
 import com.alvesdev.medsched_api.dto.response.profile.DoctorDetailResponse;
 import com.alvesdev.medsched_api.exceptions.UserNotFoundException;
@@ -26,7 +25,7 @@ public class DoctorService {
     DoctorRepository doctorRepository;
 
     @Autowired
-    UserRepository userRepository;
+    UserService userService;
 
     
     public List<DoctorDetailResponse> getAllDoctors(Pageable pageable) {
@@ -40,8 +39,7 @@ public class DoctorService {
     }
 
     public DoctorDetailResponse getDoctorByUserId(UUID uuid) {
-         User user = userRepository.findById(uuid)
-            .orElseThrow(() -> new UserNotFoundException("This user does not exist."));
+         User user = userService.findById(uuid);
 
         DoctorProfile doctor = user.getDoctorProfile();
 
@@ -59,8 +57,7 @@ public class DoctorService {
     @Transactional
     public DoctorDetailResponse update(UUID uuid, UpdateDoctorRequest updateDoctorRequest) {
 
-        User user = userRepository.findById(uuid)
-            .orElseThrow(() -> new UserNotFoundException("This user does not exist."));
+        User user = userService.findById(uuid);
 
         DoctorProfile doctorProfile = user.getDoctorProfile();
 

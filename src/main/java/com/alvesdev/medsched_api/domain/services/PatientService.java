@@ -15,7 +15,6 @@ import com.alvesdev.medsched_api.domain.model.PatientProfile;
 import com.alvesdev.medsched_api.domain.model.User;
 import com.alvesdev.medsched_api.domain.repositories.PatientRepository;
 import com.alvesdev.medsched_api.dto.response.user.PatientDetailResponse;
-import com.alvesdev.medsched_api.domain.repositories.UserRepository;
 import com.alvesdev.medsched_api.dto.request.profiles.UpdatePatientRequest;
 
 @Service
@@ -24,7 +23,7 @@ public class PatientService {
     PatientRepository patientRepository;
 
     @Autowired
-    UserRepository userRepository;
+    UserService userService;
 
     public List<PatientDetailResponse> getAllPatients() {
         return patientRepository.findAll().stream()
@@ -39,8 +38,7 @@ public class PatientService {
     }
 
     public PatientDetailResponse getByProfileId(UUID uuid) {
-        User user = userRepository.findById(uuid)
-                .orElseThrow(() -> new UserNotFoundException("This user does not exist."));
+        User user = userService.findById(uuid);
         
         PatientProfile patient = user.getPatientProfile();
 
@@ -59,8 +57,7 @@ public class PatientService {
 
     @Transactional
     public PatientDetailResponse update(UUID uuid, UpdatePatientRequest dto){
-        User user = userRepository.findById(uuid)
-                .orElseThrow(() -> new UserNotFoundException("This user does not exist."));
+        User user = userService.findById(uuid);
         
         PatientProfile patient = user.getPatientProfile();
 
