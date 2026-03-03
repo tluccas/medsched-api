@@ -29,4 +29,8 @@ public interface AppointmentRepository extends JpaRepository<Appointment, UUID> 
     int countByDoctorId(UUID doctorId);
 
     int countByPatientId(UUID patientId);
+
+    void deleteByDoctorId(UUID doctorId);
+
+    void deleteByPatientId(UUID patientId);
 }

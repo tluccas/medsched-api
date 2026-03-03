@@ -1,8 +1,10 @@
 package com.alvesdev.medsched_api.domain.services;
 
+import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
@@ -16,11 +18,12 @@ import com.alvesdev.medsched_api.domain.repositories.DoctorRepository;
 import com.alvesdev.medsched_api.domain.repositories.PatientRepository;
 import com.alvesdev.medsched_api.domain.repositories.RoleRepository;
 import com.alvesdev.medsched_api.domain.repositories.UserRepository;
+import com.alvesdev.medsched_api.dto.request.UpdateUserRequest;
 import com.alvesdev.medsched_api.dto.request.register.ProfileType;
 import com.alvesdev.medsched_api.dto.request.register.RegisterUserReqDto;
 import com.alvesdev.medsched_api.dto.response.profile.ProfileDetailResponse;
 import com.alvesdev.medsched_api.dto.response.user.ProfileResDto;
-import com.alvesdev.medsched_api.dto.response.user.UserDetailResDto;
+import com.alvesdev.medsched_api.dto.response.user.UserDetailResponse;
 import com.alvesdev.medsched_api.exceptions.EmailAlreadyExistsException;
 import com.alvesdev.medsched_api.exceptions.UserNotFoundException;
 
@@ -46,7 +49,6 @@ public class UserService {
 
     @Autowired
     AppointmentRepository appointmentRepository;
-
 
     public ProfileDetailResponse getUserProfile(UUID userId) {
         User user = userRepository.findById(userId)
@@ -87,7 +89,7 @@ public class UserService {
         return profileResponse;
     }
     @Transactional
-    public UserDetailResDto registerUser(RegisterUserReqDto data) {
+    public UserDetailResponse registerUser(RegisterUserReqDto data) {
         
         if(userRepository.existsByEmail(data.email())) {
             throw new EmailAlreadyExistsException("A user with this email already exists.");
@@ -140,12 +142,62 @@ public class UserService {
             );
         }
 
-        return new UserDetailResDto(
+        return new UserDetailResponse(
             newUser.getId(),
             newUser.getUsername(),
             newUser.getEmail(),
             profile
             
         );
+    }
+    
+    // Cacheable here
+    public User findById(UUID uuid) {
+        return userRepository.findById(uuid)
+            .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + uuid));
+    }
+
+    @Transactional
+    public UserDetailResponse updateUser(UUID uuid, UpdateUserRequest request) {
+            User user = findById(uuid);
+
+            if (user.getEmail().equals(request.email()) || userRepository.existsByEmail(request.email())){
+                throw new EmailAlreadyExistsException("A user with this email already exists.");
+            }
+
+            user.setUsername(request.username());
+            user.setEmail(request.email());
+
+            userRepository.save(user);
+
+            return new UserDetailResponse(
+                user.getId(),
+                user.getUsername(),
+                user.getEmail(),
+                null // Perhaps this is redundant in this case 
+            );
+    }
+
+    @Transactional
+    @PreAuthorize("#uuid == authentication.principal.id")
+    public void deleteUser(UUID uuid) {
+        User user = findById(uuid);
+        
+        if (user.hasRole(RoleType.DOCTOR)) {
+            Optional.ofNullable(user.getDoctorProfile()).ifPresent(doctor -> {
+                appointmentRepository.deleteByDoctorId(doctor.getId());
+                doctorRepository.delete(doctor);
+            });
+        } else if (user.hasRole(RoleType.PATIENT)) {
+            Optional.ofNullable(user.getPatientProfile()).ifPresent(patient -> {
+                appointmentRepository.deleteByPatientId(patient.getId());
+                patientRepository.delete(patient);
+            });
+        } else {
+            throw new UserNotFoundException("User profile not found for user ID: " + uuid);
+        }
+
+        userRepository.delete(user);
+
     }
 }
