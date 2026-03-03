@@ -4,7 +4,6 @@ import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -60,6 +59,10 @@ public class DoctorService {
             .orElseThrow(() -> new UserNotFoundException("This user does not exist."));
 
         DoctorProfile doctorProfile = user.getDoctorProfile();
+
+        if (doctorProfile == null) {
+            throw new UserNotFoundException("This user does not have a doctor profile.");
+        }
 
         doctorProfile.setSpecialization(updateDoctorRequest.specialization());
         doctorProfile.setLicenseNumber(updateDoctorRequest.licenseNumber());
