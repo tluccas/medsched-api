@@ -45,6 +45,10 @@ public class DoctorService {
 
         DoctorProfile doctor = user.getDoctorProfile();
 
+        if (doctor == null) {
+            throw new UserNotFoundException("This user does not have a doctor profile.");
+        }
+
         return new DoctorDetailResponse(
             doctor.getId(),
             doctor.getUser().getUsername(),
