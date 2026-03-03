@@ -33,7 +33,7 @@ import com.alvesdev.medsched_api.domain.repositories.RoleRepository;
 import com.alvesdev.medsched_api.domain.repositories.UserRepository;
 import com.alvesdev.medsched_api.dto.request.register.ProfileType;
 import com.alvesdev.medsched_api.dto.request.register.RegisterUserReqDto;
-import com.alvesdev.medsched_api.dto.response.user.UserDetailResDto;
+import com.alvesdev.medsched_api.dto.response.user.UserDetailResponse;
 import com.alvesdev.medsched_api.exceptions.EmailAlreadyExistsException;
 
 @ExtendWith(MockitoExtension.class)
@@ -108,7 +108,7 @@ public class UserServiceTest {
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(doctorRepository.save(any(DoctorProfile.class))).thenAnswer(invocation -> invocation.getArgument(0));
 
-        UserDetailResDto result = userService.registerUser(doctorDto);
+        UserDetailResponse result = userService.registerUser(doctorDto);
 
         assertNotNull(result);
         assertEquals(doctorDto.username(), result.username());
@@ -128,7 +128,7 @@ public class UserServiceTest {
         when(userRepository.save(any(User.class))).thenAnswer(invocation -> invocation.getArgument(0));
         when(patientRepository.save(any())).thenAnswer(invocation -> invocation.getArgument(0));
 
-        UserDetailResDto result = userService.registerUser(patientDto);
+        UserDetailResponse result = userService.registerUser(patientDto);
 
         assertNotNull(result);
         assertEquals(patientDto.username(), result.username());
