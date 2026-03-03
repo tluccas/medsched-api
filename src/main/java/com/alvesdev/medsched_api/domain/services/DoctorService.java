@@ -40,7 +40,7 @@ public class DoctorService {
             .toList();
     }
 
-    public DoctorDetailResponse getDoctorById(UUID uuid) {
+    public DoctorDetailResponse getDoctorByUserId(UUID uuid) {
          User user = userRepository.findById(uuid)
             .orElseThrow(() -> new UserNotFoundException("This user does not exist."));
 
