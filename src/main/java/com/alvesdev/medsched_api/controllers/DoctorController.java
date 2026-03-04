@@ -1,6 +1,5 @@
 package com.alvesdev.medsched_api.controllers;
 
-import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -14,8 +13,10 @@ import com.alvesdev.medsched_api.domain.services.DoctorService;
 import com.alvesdev.medsched_api.dto.request.profiles.UpdateDoctorRequest;
 import com.alvesdev.medsched_api.dto.response.ErrorResponse;
 import com.alvesdev.medsched_api.dto.response.profile.DoctorDetailResponse;
+import com.alvesdev.medsched_api.dto.response.PaginatedResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.media.Schema;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -25,6 +26,7 @@ import jakarta.validation.Valid;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.PathVariable;
 
 
@@ -36,12 +38,13 @@ public class DoctorController {
     @Autowired
     private DoctorService doctorService;
 
-    @Operation(summary = "Get all doctors", description = "Returns a list of all doctors in the system.")
+    @Operation(summary = "Get all doctors", description = "Returns a list of all doctors in the system, with optional pagination and specialization filter.")
     @GetMapping("")
-    public ResponseEntity<List<DoctorDetailResponse>> getAllDoctors(
-        @PageableDefault(size = 15, sort = "username") Pageable pageable
+    public ResponseEntity<PaginatedResponse<DoctorDetailResponse>> getAllDoctors(
+        @Parameter(description = "Filter by specialization") @RequestParam(required = false) String specialization,
+        @PageableDefault(size = 15) Pageable pageable
     ) {
-        List<DoctorDetailResponse> doctors = doctorService.getAllDoctors(pageable);
+        PaginatedResponse<DoctorDetailResponse> doctors = doctorService.getAllDoctors(specialization, pageable);
         return ResponseEntity.ok(doctors);
     }
 
