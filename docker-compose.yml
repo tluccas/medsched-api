@@ -1,0 +1,16 @@
+services:
+  redis:
+    image: redis:8
+    container_name: redis-app
+
+    restart: always
+    ports:
+      - "6379:6379"
+  
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
+
+# Other services (db, app, etc.) to configure in the future
