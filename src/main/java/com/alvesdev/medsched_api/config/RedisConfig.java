@@ -20,6 +20,7 @@ public class RedisConfig {
         GenericJackson2JsonRedisSerializer serializer = new GenericJackson2JsonRedisSerializer();
 
         RedisCacheConfiguration redisCacheConfiguration = RedisCacheConfiguration.defaultCacheConfig()
+            .prefixCacheNameWith("v1::")
             .entryTtl(Duration.ofHours(2))
             .disableCachingNullValues()
             .serializeValuesWith(
