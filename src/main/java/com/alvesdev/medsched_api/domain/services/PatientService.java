@@ -2,8 +2,11 @@ package com.alvesdev.medsched_api.domain.services;
 
 import java.util.List;
 import java.util.UUID;
+import java.util.stream.Collectors;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Cacheable;
 
 import com.alvesdev.medsched_api.exceptions.UserNotFoundException;
 
@@ -25,18 +28,20 @@ public class PatientService {
     @Autowired
     UserService userService;
 
+    @Cacheable(value = "PATIENTS_CACHE", key = "'allPatients'")
     public List<PatientDetailResponse> getAllPatients() {
         return patientRepository.findAll().stream()
             .map(patient -> new PatientDetailResponse(
                 patient.getUser().getId(),
                 patient.getId(),
                 patient.getUser().getUsername(),
-                patient.getBirthDate(),
+                patient.getBirthDate().toString(),
                 patient.getMedicalHistory()
             ))
-            .toList();
+            .collect(Collectors.toList());
     }
 
+    @Cacheable(value = "PATIENTS_CACHE", key = "#uuid")
     public PatientDetailResponse getByProfileId(UUID uuid) {
         User user = userService.findById(uuid);
         
@@ -50,11 +55,12 @@ public class PatientService {
             patient.getUser().getId(),
             patient.getId(),
             patient.getUser().getUsername(),
-            patient.getBirthDate(),
+            patient.getBirthDate().toString(),
             patient.getMedicalHistory()
         );
     }
 
+    @CacheEvict(value = "PATIENTS_CACHE", key = "#uuid")
     @Transactional
     public PatientDetailResponse update(UUID uuid, UpdatePatientRequest dto){
         User user = userService.findById(uuid);
@@ -74,7 +80,7 @@ public class PatientService {
             updatedPatient.getUser().getId(),
             updatedPatient.getId(),
             updatedPatient.getUser().getUsername(),
-            updatedPatient.getBirthDate(),
+            updatedPatient.getBirthDate().toString(),
             updatedPatient.getMedicalHistory()
         );
     }
