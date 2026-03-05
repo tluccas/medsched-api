@@ -4,6 +4,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.cache.annotation.CacheEvict;
+import org.springframework.cache.annotation.Caching;
 import org.springframework.security.access.prepost.PreAuthorize;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -88,7 +90,12 @@ public class UserService {
         
         return profileResponse;
     }
+
     @Transactional
+    @Caching(evict = {
+        @CacheEvict(value = "DOCTORS_CACHE", allEntries = true),
+        @CacheEvict(value = "PATIENTS_CACHE", allEntries = true)
+    })
     public UserDetailResponse registerUser(RegisterUserReqDto data) {
         
         if(userRepository.existsByEmail(data.email())) {
@@ -151,13 +158,18 @@ public class UserService {
         );
     }
     
-    // Cacheable here
     public User findById(UUID uuid) {
         return userRepository.findById(uuid)
             .orElseThrow(() -> new UserNotFoundException("User not found with ID: " + uuid));
     }
 
     @Transactional
+    @Caching(evict = {
+        @CacheEvict(value = "USERS_CACHE", key = "#uuid"),
+        @CacheEvict(value = "DOCTORS_CACHE", allEntries = true),
+        @CacheEvict(value = "PATIENTS_CACHE", allEntries = true)
+    })
+    @PreAuthorize("#uuid == authentication.principal.id")
     public UserDetailResponse updateUser(UUID uuid, UpdateUserRequest request) {
             User user = findById(uuid);
 
@@ -179,6 +191,11 @@ public class UserService {
     }
 
     @Transactional
+    @Caching(evict = {
+        @CacheEvict(value = "USERS_CACHE", key = "#uuid"),
+        @CacheEvict(value = "DOCTORS_CACHE", allEntries = true),
+        @CacheEvict(value = "PATIENTS_CACHE", allEntries = true)
+    })
     @PreAuthorize("#uuid == authentication.principal.id")
     public void deleteUser(UUID uuid) {
         User user = findById(uuid);

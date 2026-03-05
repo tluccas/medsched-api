@@ -1,13 +1,13 @@
 package com.alvesdev.medsched_api.dto.response.user;
 
-import java.time.LocalDate;
 import java.util.UUID;
 
 public record PatientDetailResponse(
     UUID userId,
     UUID patientId,
     String username,
-    LocalDate birthDate,
+
+    String birthDate,
     String medicalHistory
 ) {
     

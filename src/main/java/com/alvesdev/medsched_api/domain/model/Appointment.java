@@ -6,6 +6,7 @@ import java.util.UUID;
 import org.springframework.data.annotation.CreatedDate;
 
 import com.alvesdev.medsched_api.domain.model.enums.AppointmentStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import jakarta.persistence.Column;
 import jakarta.persistence.Entity;
@@ -31,14 +32,17 @@ public class Appointment {
     @GeneratedValue(strategy = GenerationType.UUID)
     private UUID id;
 
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "patient_id", nullable = false)
     private PatientProfile patient;
-    
+
+    @JsonIgnore
     @ManyToOne
     @JoinColumn(name = "doctor_id", nullable = false)
     private DoctorProfile doctor;
 
+    @JsonIgnore
     @OneToOne
     @JoinColumn(name = "schedule_id", nullable = false)
     private Schedule schedule;
