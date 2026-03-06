@@ -31,7 +31,7 @@ public class DoctorService {
     @Cacheable(
         value = "DOCTORS_CACHE", 
         key = "'allDoctors' + #pageable.pageNumber + ':' + #pageable.pageSize",
-        condition = "#name == null && #specialization == null")
+        condition = "#specialization == null")
     public PaginatedResponse<DoctorDetailResponse> getAllDoctors(String specialization, Pageable pageable) {
         
         Page<DoctorProfile> page;
