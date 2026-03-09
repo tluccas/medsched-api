@@ -33,7 +33,7 @@ import org.springframework.web.bind.annotation.PathVariable;
 
 
 @RestController
-@RequestMapping("/users/doctors")
+@RequestMapping("/doctors")
 public class DoctorController {
     @Autowired
     private DoctorService doctorService;
@@ -83,5 +83,12 @@ public class DoctorController {
         DoctorDetailResponse updatedDoctor = doctorService.update(uuid, updateDoctorRequest);
         return ResponseEntity.ok(updatedDoctor);
     }
+
+    // SCHEDULE ENDPOINT 
+    @GetMapping("")
+    public String getMethodName(@RequestParam String param) {
+        return new String();
+    }
+    
     
 }
