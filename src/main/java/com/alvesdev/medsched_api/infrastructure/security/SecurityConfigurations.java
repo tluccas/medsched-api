@@ -36,7 +36,13 @@ public class SecurityConfigurations {
                 ).permitAll()
                 .requestMatchers("/public/**").permitAll()
 
+                // DOCTOR ENDPOINTS
                 .requestMatchers("/users/doctors/**").hasAnyRole("DOCTOR", "ADMIN")
+
+                // SCHEDULE ENDPOINTS
+                .requestMatchers("/schedules/").hasAnyRole("DOCTOR", "ADMIN")
+
+                // PATIENT ENDPOINTS
                 .requestMatchers("/patients/**").hasAnyRole("PATIENT", "ADMIN", "DOCTOR")
 
                 .anyRequest().authenticated()
