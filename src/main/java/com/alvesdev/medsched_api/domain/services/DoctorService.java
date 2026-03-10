@@ -74,6 +74,18 @@ public class DoctorService {
         );
     }
 
+    @Cacheable(value = "DOCTORS_CACHE", key = "#uuid")
+    public DoctorDetailResponse getDoctorByProfileId(UUID uuid) {
+        DoctorProfile doctor = doctorRepository.findById(uuid)
+            .orElseThrow(() -> new UserNotFoundException("Doctor not found."));
+
+        return new DoctorDetailResponse(
+            doctor.getId(),
+            doctor.getUser().getUsername(),
+            doctor.getSpecialization()
+        );
+    }
+
     @Transactional
     @CacheEvict(value = "DOCTORS_CACHE", key = "#uuid")
     public DoctorDetailResponse update(UUID uuid, UpdateDoctorRequest updateDoctorRequest) {
