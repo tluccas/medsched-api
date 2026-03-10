@@ -43,7 +43,7 @@ public class Appointment {
     private DoctorProfile doctor;
 
     @JsonIgnore
-    @OneToOne
+    @ManyToOne
     @JoinColumn(name = "schedule_id", nullable = false)
     private Schedule schedule;
 
