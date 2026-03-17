@@ -1,5 +1,6 @@
 package com.alvesdev.medsched_api.controllers;
 
+import java.util.List;
 import java.util.UUID;
 
 import org.springframework.beans.factory.annotation.Autowired;
@@ -10,10 +11,12 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.alvesdev.medsched_api.domain.services.DoctorService;
+import com.alvesdev.medsched_api.domain.services.ScheduleService;
 import com.alvesdev.medsched_api.dto.request.profiles.UpdateDoctorRequest;
 import com.alvesdev.medsched_api.dto.response.ErrorResponse;
 import com.alvesdev.medsched_api.dto.response.profile.DoctorDetailResponse;
 import com.alvesdev.medsched_api.dto.response.PaginatedResponse;
+import com.alvesdev.medsched_api.dto.response.ScheduleResponse;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -37,6 +40,9 @@ import org.springframework.web.bind.annotation.PathVariable;
 public class DoctorController {
     @Autowired
     private DoctorService doctorService;
+
+    @Autowired
+    private ScheduleService scheduleService;
 
     @Operation(summary = "Get all doctors", description = "Returns a list of all doctors in the system, with optional pagination and specialization filter.")
     @GetMapping("")
@@ -85,9 +91,10 @@ public class DoctorController {
     }
 
     // SCHEDULE ENDPOINT 
-    @GetMapping("")
-    public String getMethodName(@RequestParam String param) {
-        return new String();
+    @GetMapping("/{doctorId}/schedules")
+    public ResponseEntity<List<ScheduleResponse>> getDoctorSchedule(@PathVariable UUID doctorId) {
+        List<ScheduleResponse> schedules = scheduleService.getDoctorSchedule(doctorId);
+        return ResponseEntity.ok(schedules);
     }
     
     
